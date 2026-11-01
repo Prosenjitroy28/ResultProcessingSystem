@@ -1,0 +1,693 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal | Result Processing System</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f6fc;
+            color: #26344a;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            width: 245px;
+            background: white;
+            padding: 28px 18px;
+            border-right: 1px solid #e7eaf0;
+            flex-shrink: 0;
+        }
+
+        .logo {
+            font-size: 21px;
+            font-weight: bold;
+            color: #1757b8;
+            margin-bottom: 35px;
+        }
+
+        .profile {
+            padding: 15px 10px;
+            background: #f5f8ff;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .profile h3 {
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .profile p {
+            font-size: 12px;
+            color: #8290a5;
+            overflow-wrap: anywhere;
+        }
+
+        .nav-title {
+            font-size: 11px;
+            color: #9ba5b5;
+            text-transform: uppercase;
+            margin: 22px 10px 12px;
+            letter-spacing: 1px;
+        }
+
+        .nav-link {
+            display: block;
+            text-decoration: none;
+            color: #596579;
+            padding: 12px;
+            margin-bottom: 5px;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: .2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: #eaf2ff;
+            color: #1757b8;
+            font-weight: bold;
+        }
+
+        .logout {
+            color: #e05252;
+        }
+
+        /* MAIN CONTENT */
+
+        .main {
+            flex: 1;
+            min-width: 0;
+            padding: 30px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            gap: 15px;
+        }
+
+        .topbar h2 {
+            font-size: 23px;
+            margin-bottom: 6px;
+        }
+
+        .topbar p {
+            color: #8994a5;
+            font-size: 13px;
+        }
+
+        .student-badge {
+            background: white;
+            padding: 12px 17px;
+            border-radius: 9px;
+            font-size: 13px;
+            box-shadow: 0 2px 8px #e8edf5;
+        }
+
+        /* WELCOME BANNER */
+
+        .banner {
+            background: linear-gradient(120deg, #1455b8, #287ce0);
+            color: white;
+            padding: 27px;
+            border-radius: 13px;
+            margin-bottom: 25px;
+        }
+
+        .banner h2 {
+            font-size: 21px;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .banner p {
+            font-size: 13px;
+            line-height: 1.7;
+            color: #e5efff;
+        }
+
+        /* SUMMARY CARDS */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 17px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 21px;
+            border-radius: 11px;
+            box-shadow: 0 2px 10px #e9edf4;
+        }
+
+        .stat-card p {
+            color: #8994a5;
+            font-size: 12px;
+            margin-bottom: 12px;
+        }
+
+        .stat-card h2 {
+            font-size: 28px;
+            color: #243b60;
+        }
+
+        .stat-card small {
+            color: #16a36a;
+            font-size: 12px;
+        }
+
+        /* CONTENT GRID */
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 260px;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .panel {
+            background: white;
+            padding: 22px;
+            border-radius: 11px;
+            box-shadow: 0 2px 10px #e9edf4;
+            margin-bottom: 20px;
+        }
+
+        .panel h3 {
+            font-size: 17px;
+            margin-bottom: 18px;
+        }
+
+        /* SEMESTER FILTER */
+
+        .filter {
+            margin-bottom: 20px;
+        }
+
+        .filter label {
+            display: block;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 9px;
+        }
+
+        .filter select {
+            width: 100%;
+            max-width: 260px;
+            padding: 11px;
+            border: 1px solid #dce2ec;
+            border-radius: 7px;
+            background: white;
+            color: #34445c;
+            font-size: 13px;
+        }
+
+        /* TABLE */
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 850px;
+        }
+
+        th {
+            background: #243b60;
+            color: white;
+            padding: 13px 10px;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 13px 10px;
+            border-bottom: 1px solid #edf0f5;
+            text-align: center;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        tbody tr:hover {
+            background: #f6f9ff;
+        }
+
+        .pass {
+            color: #119653;
+            font-weight: bold;
+        }
+
+        .fail {
+            color: #df4545;
+            font-weight: bold;
+        }
+
+        /* GPA LIST */
+
+        .gpa-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 13px 0;
+            border-bottom: 1px solid #edf0f5;
+            font-size: 13px;
+            gap: 10px;
+        }
+
+        .gpa-value {
+            color: #1757b8;
+            font-weight: bold;
+        }
+
+        /* COURSE LIST */
+
+        .course-item {
+            padding: 13px 0;
+            border-bottom: 1px solid #edf0f5;
+        }
+
+        .course-item strong {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .course-item span {
+            font-size: 11px;
+            color: #8a96a8;
+        }
+
+        .empty {
+            text-align: center;
+            color: #8994a5;
+            padding: 25px 10px;
+            font-size: 13px;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 1100px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .sidebar {
+                width: 190px;
+            }
+
+            .main {
+                padding: 20px;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .layout {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 16px;
+            }
+
+            .logo {
+                margin-bottom: 15px;
+            }
+
+            .profile {
+                margin-bottom: 12px;
+            }
+
+            .nav-link {
+                display: inline-block;
+                padding: 9px;
+            }
+
+            .nav-title {
+                display: none;
+            }
+
+            .main {
+                padding: 15px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="logo">STUDENT PORTAL</div>
+
+        <div class="profile">
+            <h3>{{ student.user.get_full_name|default:student.user.username }}</h3>
+            <p>{{ student.student_id }}</p>
+            <p>{{ student.department }}</p>
+        </div>
+
+        <div class="nav-title">Overview</div>
+
+        <a href="#dashboard" class="nav-link active">▦ Dashboard</a>
+       
+
+        <div class="nav-title">Account</div>
+
+        <a href="{% url 'logout' %}" class="nav-link logout">
+            ↪ Logout
+        </a>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+
+    <main class="main" id="dashboard">
+
+        <!-- HEADER -->
+
+        <div class="topbar">
+
+            <div>
+                <h2>Welcome, {{ student.user.first_name|default:student.user.username }}!</h2>
+                <p>Here is your academic performance overview.</p>
+            </div>
+
+            <div class="student-badge">
+                Student ID: {{ student.student_id }}
+            </div>
+
+        </div>
+
+
+        <!-- BANNER -->
+
+        <div class="banner">
+
+            <h2>Your Academic Dashboard</h2>
+
+            <p>
+                Welcome to your Result Processing System.
+                View your course marks, semester GPA and overall CGPA
+                from one place.
+            </p>
+
+        </div>
+
+
+        <!-- SUMMARY CARDS -->
+
+        <div class="stats">
+
+            <div class="stat-card">
+                <p>Overall CGPA</p>
+                <h2>{{ overall_cgpa.cgpa }}</h2>
+                <small>Academic performance</small>
+            </div>
+
+            <div class="stat-card">
+                <p>Total Credits</p>
+                <h2>{{ overall_cgpa.total_credits }}</h2>
+                <small>Credits completed with results</small>
+            </div>
+
+            <div class="stat-card">
+                <p>Semester Records</p>
+                <h2>{{ semester_gpas|length }}</h2>
+                <small>Available GPA records</small>
+            </div>
+
+        </div>
+
+
+        <!-- CONTENT GRID -->
+
+        <div class="content-grid">
+
+            <!-- LEFT CONTENT -->
+
+            <div>
+
+                <!-- COURSE RESULTS -->
+
+                <section class="panel" id="results">
+
+                    <h3>Statement of Results</h3>
+
+                    <form method="GET" class="filter">
+
+                        <label for="semester">Select Semester</label>
+
+                        <select
+                            name="semester"
+                            id="semester"
+                            onchange="this.form.submit()"
+                        >
+
+                            <option value="">All Semesters</option>
+
+                            {% for semester in semesters %}
+
+                                <option
+                                    value="{{ semester.id }}"
+                                    {% if selected_semester_id == semester.id|stringformat:"s" %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    {{ semester.name }}
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </form>
+
+
+                    {% if results %}
+
+                    <div class="table-wrapper">
+
+                        <table>
+
+                            <thead>
+                                <tr>
+                                    <th>Course Code</th>
+                                    <th>Course Name</th>
+                                    <th>Semester</th>
+                                    <th>Attendance</th>
+                                    <th>Assignment</th>
+                                    <th>Class Test</th>
+                                    <th>Midterm</th>
+                                    <th>Final</th>
+                                    <th>Total</th>
+                                    <th>Grade</th>
+                                    <th>Grade Point</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                {% for result in results %}
+
+                                <tr>
+
+                                    <td>{{ result.mark.enrollment.course_offering.course.code }}</td>
+
+                                    <td>{{ result.mark.enrollment.course_offering.course.title }}</td>
+
+                                    <td>{{ result.mark.enrollment.course_offering.semester }}</td>
+
+                                    <td>{{ result.mark.attendance_marks }}</td>
+
+                                    <td>{{ result.mark.assignment_marks }}</td>
+
+                                    <td>{{ result.mark.class_test_marks }}</td>
+
+                                    <td>{{ result.mark.midterm_marks }}</td>
+
+                                    <td>{{ result.mark.final_marks }}</td>
+
+                                    <td><strong>{{ result.mark.total_marks }}</strong></td>
+
+                                    <td>{{ result.letter_grade }}</td>
+
+                                    <td>{{ result.grade_point }}</td>
+
+                                    <td>
+                                        {% if result.status == 'PASS' %}
+                                            <span class="pass">PASS</span>
+                                        {% else %}
+                                            <span class="fail">FAIL</span>
+                                        {% endif %}
+                                    </td>
+
+                                </tr>
+
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                    {% else %}
+
+                        <p class="empty">
+                            No results available for this semester.
+                        </p>
+
+                    {% endif %}
+
+                </section>
+
+                <!-- SEMESTER GPA -->
+
+                <section class="panel" id="gpa">
+
+                    <h3>Semester GPA History</h3>
+
+                    {% if semester_gpas %}
+
+                        {% for item in semester_gpas %}
+
+                            <div class="gpa-item">
+
+                                <span>{{ item.semester }}</span>
+
+                                <span class="gpa-value">
+                                    GPA: {{ item.gpa }}
+                                </span>
+
+                            </div>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                        <p class="empty">
+                            No semester GPA available.
+                        </p>
+
+                    {% endif %}
+
+                </section>
+
+            </div>
+
+
+            <!-- RIGHT SIDEBAR -->
+
+            <aside>
+
+                <!-- MY COURSES -->
+
+                <section class="panel">
+
+                    <h3>My Courses</h3>
+
+                    {% if results %}
+
+                        {% for result in results %}
+
+                            <div class="course-item">
+
+                                <strong>
+                                    {{ result.mark.enrollment.course_offering.course.title }}
+                                </strong>
+
+                                <span>
+                                    {{ result.mark.enrollment.course_offering.course.code }}
+                                    ·
+                                    {{ result.mark.enrollment.course_offering.semester }}
+                                </span>
+
+                            </div>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                        <p class="empty">No courses available.</p>
+
+                    {% endif %}
+
+                </section>
+
+
+                <!-- STUDENT DETAILS -->
+
+                <section class="panel">
+
+                    <h3>Academic Information</h3>
+
+                    <div class="course-item">
+                        <span>Department</span>
+                        <strong>{{ student.department }}</strong>
+                    </div>
+
+                    <div class="course-item">
+                        <span>Academic Session</span>
+                        <strong>{{ student.session }}</strong>
+                    </div>
+
+                    <div class="course-item">
+                        <span>Student ID</span>
+                        <strong>{{ student.student_id }}</strong>
+                    </div>
+
+                </section>
+
+            </aside>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+</html>

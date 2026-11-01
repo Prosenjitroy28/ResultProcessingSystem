@@ -1,0 +1,200 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Result Processing System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        .sidebar {
+            width: 240px;
+            height: 100vh;
+            position: fixed;
+            background: #172554;
+            color: white;
+            padding: 25px 18px;
+        }
+
+        .sidebar h2 {
+            font-size: 19px;
+            margin-bottom: 35px;
+        }
+
+        .sidebar a {
+            display: block;
+            color: #dbeafe;
+            text-decoration: none;
+            padding: 13px;
+            margin-bottom: 8px;
+            border-radius: 7px;
+        }
+
+        .sidebar a:hover {
+            background: #1e40af;
+        }
+
+        .main {
+            margin-left: 240px;
+            padding: 30px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 26px;
+        }
+
+        .logout {
+            background: #dc2626;
+            color: white;
+            padding: 11px 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(190px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px #00000010;
+        }
+
+        .card h3 {
+            color: #64748b;
+            font-size: 15px;
+        }
+
+        .card p {
+            font-size: 30px;
+            font-weight: bold;
+            color: #1d4ed8;
+        }
+
+        .section {
+            background: white;
+            padding: 25px;
+            margin-top: 30px;
+            border-radius: 12px;
+        }
+
+        .section a {
+            display: inline-block;
+            margin: 8px;
+            padding: 12px 18px;
+            background: #1d4ed8;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+        @media(max-width: 650px) {
+            .sidebar {
+                position: static;
+                width: 100%;
+                height: auto;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="sidebar">
+
+    <h2>Result Processing System</h2>
+
+    <a href="{% url 'admin_dashboard' %}">Dashboard</a>
+    <a href="/admin/academics/department/">Departments</a>
+    <a href="/admin/academics/academicsession/">Sessions</a>
+    <a href="/admin/academics/semester/">Semesters</a>
+    <a href="/admin/academics/course/">Courses</a>
+    <a href="/admin/students/student/">Students</a>
+
+</div>
+
+<div class="main">
+
+    <div class="header">
+        <div>
+            <h1>Admin Dashboard</h1>
+            <p>Welcome, {{ request.user.username }}!</p>
+        </div>
+
+        <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button class="logout" type="submit">Logout</button>
+        </form>
+    </div>
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>Total Students</h3>
+            <p>{{ total_students }}</p>
+        </div>
+
+        <div class="card">
+            <h3>Total Departments</h3>
+            <p>{{ total_departments }}</p>
+        </div>
+
+        <div class="card">
+            <h3>Total Courses</h3>
+            <p>{{ total_courses }}</p>
+        </div>
+
+        <div class="card">
+            <h3>Academic Sessions</h3>
+            <p>{{ total_sessions }}</p>
+        </div>
+
+    </div>
+
+    <div class="section">
+
+        <h2>Academic Management</h2>
+
+        <a href="/admin/academics/department/">Manage Departments</a>
+        <a href="/admin/academics/academicsession/">Manage Sessions</a>
+        <a href="/admin/academics/semester/">Manage Semesters</a>
+        <a href="/admin/academics/course/">Manage Courses</a>
+        <a href="/admin/students/student/">Manage Students</a>
+
+    </div>
+
+</div>
+
+</body>
+</html>
