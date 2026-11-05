@@ -1,0 +1,295 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Student Marks</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background: #172554;
+            color: white;
+            position: fixed;
+            padding: 25px 20px;
+        }
+
+        .sidebar h2 {
+            margin-bottom: 35px;
+            font-size: 22px;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 13px 15px;
+            border-radius: 7px;
+            margin-bottom: 8px;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: #1d4ed8;
+        }
+
+        .main {
+            margin-left: 250px;
+            padding: 30px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .header h1 {
+            font-size: 26px;
+        }
+
+        .logout {
+            background: #dc2626;
+            color: white;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+
+        .course-info {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .course-info p {
+            margin-top: 8px;
+            color: #475569;
+        }
+
+        .messages {
+            margin-bottom: 20px;
+        }
+
+        .message {
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .table-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 950px;
+        }
+
+        th, td {
+            padding: 13px 10px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+        }
+
+        th {
+            background: #eff6ff;
+            color: #1e3a8a;
+            font-size: 13px;
+        }
+
+        td input {
+            width: 85px;
+            padding: 9px;
+            border: 1px solid #cbd5e1;
+            border-radius: 5px;
+        }
+
+        td input:focus {
+            outline: 2px solid #93c5fd;
+            border-color: #2563eb;
+        }
+
+        .save-btn {
+            margin-top: 20px;
+            background: #1d4ed8;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .save-btn:hover {
+            background: #1e40af;
+        }
+
+        .empty {
+            padding: 25px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <aside class="sidebar">
+        <h2>Teacher Panel</h2>
+        <a href="{% url 'teacher_dashboard' %}">Dashboard</a>
+        <a href="#" class="active">Manage Marks</a>
+        <a href="{% url 'logout' %}">Logout</a>
+    </aside>
+
+    <main class="main">
+
+        <div class="header">
+            <h1>Manage Student Marks</h1>
+            <a href="{% url 'logout' %}" class="logout">Logout</a>
+        </div>
+
+        <div class="course-info">
+            <h2>{{ course.course.code }} - {{ course.course.title }}</h2>
+            <p><strong>Semester:</strong> {{ course.semester.name }}</p>
+            <p><strong>Section:</strong> {{ course.section }}</p>
+            <p><strong>Total Students:</strong> {{ enrollments|length }}</p>
+        </div>
+
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="table-container">
+
+            {% if enrollments %}
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Student Name</th>
+                                <th>Attendance<br>(10)</th>
+                                <th>Assignment<br>(10)</th>
+                                <th>Class Test<br>(10)</th>
+                                <th>Midterm<br>(30)</th>
+                                <th>Final<br>(40)</th>
+                                <th>Total<br>(100)</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for enrollment in enrollments %}
+                                <tr>
+                                    <td>{{ enrollment.student.student_id }}</td>
+                                    <td>{{ enrollment.student.user.get_full_name|default:enrollment.student.user.username }}</td>
+
+                                    <td>
+                                        <input type="number" step="0.01" min="0" max="10"
+                                            name="attendance_{{ enrollment.id }}"
+                                            value="{{ enrollment.existing_mark.attendance_marks|default:'0' }}"
+                                            required>
+                                    </td>
+
+                                    <td>
+                                        <input type="number" step="0.01" min="0" max="10"
+                                            name="assignment_{{ enrollment.id }}"
+                                            value="{{ enrollment.existing_mark.assignment_marks|default:'0' }}"
+                                            required>
+                                    </td>
+
+                                    <td>
+                                        <input type="number" step="0.01" min="0" max="10"
+                                            name="class_test_{{ enrollment.id }}"
+                                            value="{{ enrollment.existing_mark.class_test_marks|default:'0' }}"
+                                            required>
+                                    </td>
+
+                                    <td>
+                                        <input type="number" step="0.01" min="0" max="30"
+                                            name="midterm_{{ enrollment.id }}"
+                                            value="{{ enrollment.existing_mark.midterm_marks|default:'0' }}"
+                                            required>
+                                    </td>
+
+                                    <td>
+                                        <input type="number" step="0.01" min="0" max="40"
+                                            name="final_{{ enrollment.id }}"
+                                            value="{{ enrollment.existing_mark.final_marks|default:'0' }}"
+                                            required>
+                                    </td>
+
+                                    <td>
+                                        {% if enrollment.existing_mark %}
+                                            {{ enrollment.existing_mark.total_marks }}
+                                        {% else %}
+                                            0
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <button type="submit" class="save-btn">
+                        Save All Marks
+                    </button>
+                </form>
+            {% else %}
+                <div class="empty">
+                    No students are enrolled in this course yet.
+                </div>
+            {% endif %}
+
+        </div>
+
+    </main>
+
+</body>
+</html>
